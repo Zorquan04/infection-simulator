@@ -1,18 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\InfectionSimulator.Implementation\InfectionSimulator.Implementation.csproj" />
       <ProjectReference Include="..\InfectionSimulator.Interfaces\InfectionSimulator.Interfaces.csproj" />
       <ProjectReference Include="..\InfectionSimulator.Models\InfectionSimulator.Models.csproj" />
-      <ProjectReference Include="..\InfectionSimulator.Services\InfectionSimulator.Services.csproj" />
-      <ProjectReference Include="..\InfectionSimulator.Simulation\InfectionSimulator.Simulation.csproj" />
     </ItemGroup>
 
 </Project>
