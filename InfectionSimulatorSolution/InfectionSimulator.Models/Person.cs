@@ -111,4 +111,29 @@ public class Person
             InfectionRemainingSteps = (int)Math.Round(this._infectionTimer * 25)
         };
     }
+    
+    public static Person FromMemento(PersonMemento m)
+    {
+        var p = new Person(
+            m.Id,
+            new Vector2D(m.PosX, m.PosY),
+            new Vector2D(m.VelX, m.VelY)
+        )
+        {
+            Immunity = m.Immunity,
+            Health = m.Health,
+            Symptoms = m.Symptom ?? SymptomState.Asymptomatic,
+            State = m.State
+        };
+
+        // odtwórz timer infekcji
+        p.SetInfectionProgress(m.InfectionRemainingSteps / 25.0);
+
+        return p;
+    }
+
+    public void SetInfectionProgress(double seconds)
+    {
+        _infectionTimer = seconds;
+    }
 }
