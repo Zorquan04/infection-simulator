@@ -2,8 +2,8 @@
 
 public enum Immunity
 {
-    Immune,
-    Susceptible
+    Susceptible,
+    Immune
 }
 
 public enum HealthState

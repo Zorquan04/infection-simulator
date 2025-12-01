@@ -12,8 +12,8 @@ public class Simulator(double width, double height, double maxSpeed)
 
     private int _nextId = 1;
 
-    private const double InfectDistance = 2.0;
-    private const double InfectTime = 3.0;
+    private const double InfectDistance = 3.0; // zmiana z 2m dla większej szansy zarażenia
+    private const double InfectTime = 0.5; // zmiana z 3s dla realnej szansy zajścia
 
     private readonly Dictionary<(int, int), double> _proximityTimers = new();
 
@@ -29,23 +29,17 @@ public class Simulator(double width, double height, double maxSpeed)
 
     private void SpawnPerson(bool forceImmunity, double infectionChance)
     {
-        double x, y;
+        double margin = 1.0;
 
-        int edge = _rng.Next(4);
-        switch (edge)
-        {
-            case 0: x = 0; y = _rng.NextDouble() * Height; break;
-            case 1: x = Width; y = _rng.NextDouble() * Height; break;
-            case 2: x = _rng.NextDouble() * Width; y = 0; break;
-            default: x = _rng.NextDouble() * Width; y = Height; break;
-        }
+        double x = margin + _rng.NextDouble() * (Width - 2 * margin);
+        double y = margin + _rng.NextDouble() * (Height - 2 * margin);
 
         var pos = new Vector2D(x, y);
 
         double angle = _rng.NextDouble() * Math.PI * 2;
         double speed = _rng.NextDouble() * maxSpeed; // 0 -> maxSpeed
-        if (speed < 0.5)
-            speed = 0.5; // minimalna sensowna prędkość
+        if (speed < 0.2)
+            speed = 0.2; // minimalna sensowna prędkość
 
         var vel = new Vector2D(Math.Cos(angle) * speed, Math.Sin(angle) * speed);
 
@@ -85,7 +79,12 @@ public class Simulator(double width, double height, double maxSpeed)
 
         if (!hit) return;
 
-        if (_rng.NextDouble() < 0.5)
+        // modyfikacja parametrów (25% szansy na odbicie zamiast 50%)
+        if (_rng.NextDouble() < 0.25)
+        {
+            p.MarkExited();
+        }
+        else
         {
             var vel = p.Velocity.GetComponents();
             double vx = vel[0];
@@ -95,10 +94,6 @@ public class Simulator(double width, double height, double maxSpeed)
             if (y <= 0 || y >= Height) vy = -vy;
 
             p.SetVelocity(new Vector2D(vx, vy));
-        }
-        else
-        {
-            p.MarkExited();
         }
     }
 

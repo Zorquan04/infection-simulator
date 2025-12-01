@@ -8,9 +8,9 @@ internal static class Program
 {
     static void Main()
     {
-        double width = 50; // m
-        double height = 30; // m
-        double maxSpeed = 2.5; // m/s
+        double width = 40; // m
+        double height = 40; // m
+        double maxSpeed = 0.4; // m/s - zmiana z 2.5 dla lepszej symulacji
 
         var sim = new Simulator(width, height, maxSpeed);
         sim.SeedInitialPopulation(50, initialHasImmunity: false, infectionChanceForNew: 0.1);
