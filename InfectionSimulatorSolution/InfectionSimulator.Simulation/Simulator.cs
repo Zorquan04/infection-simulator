@@ -64,10 +64,8 @@ public class Simulator(double width, double height, double maxSpeed)
     }
 
     // wykonanie jednego kroku symulacji
-    public void Step()
+    public void Step(double dt = 0.04)
     {
-        double dt = 0.04; // krok czasowy 1/25 s
-
         foreach (var p in _agents.ToList())
         {
             if (p.State != AgentState.Exited)
