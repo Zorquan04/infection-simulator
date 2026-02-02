@@ -2,6 +2,6 @@
 
 public interface IPolar2D
 {
-    double GetAngle();  // kąt w radianach
-    double Abs();       // długość wektora
+    double GetAngle();  // angle in radians
+    double Abs();       // vector length
 }

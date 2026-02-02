@@ -10,92 +10,162 @@ namespace InfectionSimulator.Animation;
 
 public partial class MainWindow : Window
 {
-    private Simulator sim;                  // instancja symulatora populacji
-    private List<Ellipse> ellipses = new(); // lista wizualnych reprezentacji agentów
-    private DateTime lastUpdate;            // czas ostatniej aktualizacji animacji
-    private const double FPS = 60.0;        // docelowa liczba klatek na sekundę
+    private Simulator sim;                  // population simulator instance
+    private List<Ellipse> ellipses = new(); // list of visual representations of agents
+    private DateTime lastUpdate;            // last animation update time
+    private const double FPS = 60.0;        // target frame rate
+    private bool isPaused = false;          // is the animation paused
 
-    private double elapsedTime = 0.0;       // czas symulacji w sekundach
-    private const double TotalSimulationTime = 60.0; // 60 sekund symulacji realnego czasu
-    private double statsAccumulator = 0; // do liczenia kiedy aktualizować pasek
+    private double timeScale = 1.0;         // time scale for simulation speed
+    private double elapsedTime = 0.0;       // simulation time in seconds
+    private const double TotalSimulationTime = 60.0; // 60 seconds of real-time simulation
+    private double statsAccumulator = 0;    // to count when to update the bar
 
+    private bool isFast = false;            // is fast simulation mode
+    private bool isPostEpidemic;            // is it a post-epidemic scenario
+    private double immunityRatio;           // ratio of immune agents at start
+    private double infectChance;            // chance of infection at start
+    
     public MainWindow()
     {
         InitializeComponent();
 
-        // Pokaż okno wyboru scenariusza
-        var scenarioWindow = new ScenarioWindow();
+        // Show scenario selection window
+        var scenarioWindow = new ScenarioWindow(this);
         bool? result = scenarioWindow.ShowDialog();
 
         if (result != true)
         {
-            Close(); // jeśli użytkownik zamknął okno bez wyboru, zamykamy aplikację
+            Close(); // if the user closes the window without making a selection, we close the application
             return;
         }
 
-        // Ustawienie parametrów startowych w zależności od wyboru
-        double immunityRatio = scenarioWindow.IsPostEpidemic ? 0.7 : 0.0;
-        double infectChance = scenarioWindow.IsPostEpidemic ? 0.03 : 0.1;
+        // Setting the startup parameters depending on the selection
+        isPostEpidemic = scenarioWindow.IsPostEpidemic;
 
-        // Tworzymy symulator: wymiary mapy w metrach i maksymalna prędkość agentów
-        sim = new Simulator(30.0, 30.0, 2.5);
+        immunityRatio = isPostEpidemic ? 0.7 : 0.0;
+        infectChance = isPostEpidemic ? 0.03 : 0.1;
 
-        // Tworzymy początkową populację 50 osób
-        // Bez odporności (0.0) i 10% szansą bycia zakażonym
-        sim.SeedInitialPopulation(50, immunityRatio, infectChance);
+        InitializeSimulation(); // we initialize and start the simulation
 
-        // Zapamiętujemy czas startowy
-        lastUpdate = DateTime.Now;
-
-        // Subskrybujemy do pętli renderowania WPF
-        // To wywołuje OnRendering przy każdej klatce obrazu
+        // Subscribe to the WPF rendering loop
+        // This calls OnRendering on each image frame
         CompositionTarget.Rendering += OnRendering;
     }
 
-    // Wywoływana przy każdej klatce renderowania
+    private void InitializeSimulation()
+    {
+        // Start parameters for speed
+        timeScale = 1.0;
+        isFast = false;
+        SpeedButton.Content = "Speed up x2";
+
+        // We are creating a new simulator
+        sim = new Simulator(30.0, 30.0, 2.5);
+        sim.SeedInitialPopulation(50, immunityRatio, infectChance);
+
+        // We clean the visualization
+        ellipses.Clear();
+        SimulationCanvas.Children.Clear();
+
+        // Time reset
+        elapsedTime = 0.0;
+        statsAccumulator = 0.0;
+
+        // Animation state reset
+        isPaused = false;
+        lastUpdate = DateTime.Now;
+
+        StartStopButton.Content = "Stop";
+        StatsTextBlock.Text = "Simulation started...";
+    }
+
+    // Resets the simulation with new parameters (the case of ending the previous simulation and starting a new one)
+    public void ResetSimulation(bool isPostEpidemic)
+    {
+        double immunityRatio = isPostEpidemic ? 0.7 : 0.0;
+        double infectChance = isPostEpidemic ? 0.03 : 0.1;
+
+        sim = new Simulator(30.0, 30.0, 2.5);
+        sim.SeedInitialPopulation(50, immunityRatio, infectChance);
+
+        elapsedTime = 0;
+        statsAccumulator = 0;
+        isPaused = false;
+        StartStopButton.Content = "Stop";
+
+        timeScale = 1.0;
+        isFast = false;
+        SpeedButton.Content = "Speed up x2";
+
+        lastUpdate = DateTime.Now;
+
+        SimulationCanvas.Children.Clear();
+        ellipses.Clear();
+
+        CompositionTarget.Rendering += OnRendering;
+    }
+
+    // Called on each rendering frame
     private void OnRendering(object sender, EventArgs e)
     {
-        // Obliczamy czas od ostatniej aktualizacji
-        var now = DateTime.Now;
-        double deltaMs = (now - lastUpdate).TotalMilliseconds;
-        double frameTime = 1000.0 / FPS; // czas jednej klatki w ms
+        // If the animation is paused, we leave - stop updating
+        if (isPaused)
+            return;
 
-        // Jeśli jeszcze nie minął czas na kolejną klatkę, wychodzimy
+        // We calculate the time since the last update
+        var now = DateTime.Now;
+        double deltaMs = (now - lastUpdate).TotalMilliseconds * timeScale;
+        double frameTime = 1000.0 / FPS; // time of one frame in ms
+
+        // If the time for the next frame hasn't passed yet, we leave
         if (deltaMs < frameTime)
             return;
 
-        // Aktualizujemy czas ostatniej aktualizacji
+        // We are updating the last update time
         lastUpdate = now;
 
-        double dt = deltaMs / 1000.0; // sekundy na krok
+        double dt = deltaMs / 1000.0; // seconds per step
 
-        // aktualizujemy czas symulacji
+        // we update the simulation time
         elapsedTime += dt;
         statsAccumulator += dt;
 
         if (elapsedTime >= TotalSimulationTime)
         {
-            // zatrzymujemy animację
+            // we stop the animation
             CompositionTarget.Rendering -= OnRendering;
             CreateSnapshot();
-            MessageBox.Show("Symulacja zakończona po 60 sekundach. Utworzono Snapshot.");
+
+            string path = System.IO.Path.Combine(Environment.CurrentDirectory, "snapshot.json");
+            var snapshot = SnapshotManager.LoadSnapshot(path);
+            var stats = SimulationStatsCalc.CalculateFromSnapshot(snapshot);
+
+            // show results window
+            var resultWindow = new SimulationResultWindow(stats, this)
+            {
+                Owner = this
+            };
+
+            resultWindow.ShowDialog();
+
             return;
         }
 
-        // Wykonujemy krok symulacji z deltaTime = 1/FPS
+        // We execute a simulation step with deltaTime = 1/FPS
         sim.Step(dt);
 
-        // Dodajemy drobne losowe zmiany kierunku i prędkości dla każdego agenta
+        // We add small random changes in direction and speed for each agent
         foreach (var p in sim.Agents)
         {
             if (p.State != AgentState.Exited)
                 p.ApplyRandomVelocityPerturbation(2.5, 0.2);
         }
 
-        // Rysujemy wszystkich agentów na canvasie
+        // We draw all agents on the canvas
         DrawAgents();
 
-        // Aktualizacja statystyk co 1 sekundę
+        // Update statistics every 1 second
         if (statsAccumulator >= 1.0)
         {
             UpdateStats();
@@ -113,31 +183,31 @@ public partial class MainWindow : Window
         SnapshotManager.SaveSnapshot(path, memos);
     }
 
-    // Rysowanie agentów na canvasie
+    // Drawing agents on canvas
     private void DrawAgents()
     {
-        // Wymiary mapy w metrach
+        // Map dimensions in meters
         double mapWidth = 30.0;
         double mapHeight = 30.0;
 
-        // Skalowanie mapy do wymiarów canvasu
+        // Scaling the map to the canvas dimensions
         double scaleX = SimulationCanvas.ActualWidth / mapWidth;
         double scaleY = SimulationCanvas.ActualHeight / mapHeight;
-        double scale = Math.Min(scaleX, scaleY); // zachowujemy proporcje, aby cała mapa się zmieściła
+        double scale = Math.Min(scaleX, scaleY); // we keep the proportions so that the entire map fits
 
-        // Dodajemy brakujące Ellipse jeśli pojawili się nowi agenci
+        // We add missing Ellipses if new agents appear
         while (ellipses.Count < sim.Agents.Count)
         {
             Ellipse ellipse = new()
             {
-                Width = 6,  // szerokość kropki
-                Height = 6  // wysokość kropki
+                Width = 6,  // dot width
+                Height = 6  // dot height
             };
             SimulationCanvas.Children.Add(ellipse);
             ellipses.Add(ellipse);
         }
 
-        // Aktualizacja pozycji i koloru wszystkich agentów
+        // Update position and color of all agents
         for (int i = 0; i < sim.Agents.Count; i++)
         {
             var p = sim.Agents[i];
@@ -151,24 +221,24 @@ public partial class MainWindow : Window
             else
             {
                 e.Visibility = Visibility.Visible;
-                Canvas.SetLeft(e, p.Position.X * scale); // pozycja X na canvasie
-                Canvas.SetTop(e, p.Position.Y * scale);  // pozycja Y na canvasie
-                e.Fill = GetBrushForPerson(p);           // kolor zależny od stanu zdrowia/odporności
+                Canvas.SetLeft(e, p.Position.X * scale); // position X on the canvas
+                Canvas.SetTop(e, p.Position.Y * scale);  // position Y on the canvas
+                e.Fill = GetBrushForPerson(p);           // color depends on health/immunity
             }
         }
     }
 
-    // Zwraca odpowiedni kolor dla agenta
+    // Returns the appropriate color for the agent
     private Brush GetBrushForPerson(Person p)
     {
         if (p.Immunity == Immunity.Immune)
-            return Brushes.Yellow; // odporny
+            return Brushes.Yellow; // resistant
         if (p.Health == HealthState.Infected)
-            return Brushes.Red;  // zakażony
-        return Brushes.Green;    // zdrowy i wrażliwy
+            return Brushes.Red;  // infected
+        return Brushes.Green;    // healthy and sensitive
     }
 
-    // Aktualizacja TextBlocka z podsumowaniem populacji
+    // TextBlock update with population summary
     private void UpdateStats()
     {
         int healthy = 0, infected = 0, immune = 0, exited = 0;
@@ -184,5 +254,45 @@ public partial class MainWindow : Window
         int remaining = sim.Agents.Count - exited;
 
         StatsTextBlock.Text = $"t={(int)elapsedTime}s: remaining={remaining} total={sim.Agents.Count} healthy={healthy} infected={infected} immune={immune} exited={exited}";
+    }
+
+    // Start/Stop button click handler
+    private void StartStopButton_Click(object sender, RoutedEventArgs e)
+    {
+        isPaused = !isPaused;
+
+        if (isPaused)
+        {
+            StartStopButton.Content = "Start";
+        }
+        else
+        {
+            // we reset the clock so that dt is not huge
+            lastUpdate = DateTime.Now;
+            StartStopButton.Content = "Stop";
+        }
+    }
+
+    // Restart button click handler
+    private void RestartButton_Click(object sender, RoutedEventArgs e)
+    {
+        InitializeSimulation();
+    }
+
+    // Speed toggle button click handler
+    private void SpeedButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (!isFast)
+        {
+            timeScale = 2.0;
+            isFast = true;
+            SpeedButton.Content = "Slow down";
+        }
+        else
+        {
+            timeScale = 1.0;
+            isFast = false;
+            SpeedButton.Content = "Speed up x2";
+        }
     }
 }

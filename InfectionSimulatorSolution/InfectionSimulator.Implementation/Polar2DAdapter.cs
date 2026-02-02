@@ -6,8 +6,8 @@ public class Polar2DAdapter(Vector2D vector) : IPolar2D
 {
     public double Abs() => vector.Abs();
 
-    // Z użyciem funkcji cyklometrycznej atan2(y, x)
-    // zwracamy kąt względem osi OX w radianach
+    // Using the cyclometric function atan2(y, x)
+    // we return the angle relative to the x-axis in radians
     public double GetAngle()
     {
         var comp = vector.GetComponents();

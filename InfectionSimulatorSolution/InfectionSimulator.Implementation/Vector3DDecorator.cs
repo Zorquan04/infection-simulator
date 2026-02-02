@@ -16,7 +16,7 @@ public class Vector3DDecorator(IVector srcVector, double z) : IVector
         return Math.Sqrt(c[0] * c[0] + c[1] * c[1] + c[2] * c[2]);
     }
 
-    // Iloczyn skalarny 3D
+    // 3D dot product
     public double Cdot(IVector param)
     {
         var a = GetComponents();
@@ -24,7 +24,7 @@ public class Vector3DDecorator(IVector srcVector, double z) : IVector
         return a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
     }
 
-    // Iloczyn wektorowy (cross product)
+    // Cross product
     public Vector3D Cross(IVector param)
     {
         var a = GetComponents();
@@ -43,7 +43,7 @@ public class Vector3DDecorator(IVector srcVector, double z) : IVector
     }
 }
 
-// Pomocnicza klasa Vector3D do przechowywania wyniku cross product
+// Auxiliary Vector3D class to store the cross product result
 public class Vector3D(double x, double y, double z)
 {
     public readonly double X = x, Y = y, Z = z;

@@ -1,0 +1,45 @@
+﻿<Window x:Class="InfectionSimulator.Animation.SimulationResultWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Simulation result"
+        Height="300" Width="360"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner">
+    <StackPanel Margin="20">
+        <TextBlock Text="Simulation completed" FontSize="18" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Center"/>
+
+        <TextBlock Text="Snapshot saved successfully." Margin="0,0,0,20" HorizontalAlignment="Center"/>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Total:" Grid.Row="0"/>
+            <TextBlock Text="{Binding Total}" Grid.Row="0" Grid.Column="1" TextAlignment="Right"/>
+
+            <TextBlock Text="Healthy:" Grid.Row="1"/>
+            <TextBlock Text="{Binding Healthy}" Grid.Row="1" Grid.Column="1" TextAlignment="Right"/>
+
+            <TextBlock Text="Infected:" Grid.Row="2"/>
+            <TextBlock Text="{Binding Infected}" Grid.Row="2" Grid.Column="1" TextAlignment="Right"/>
+
+            <TextBlock Text="Immune:" Grid.Row="3"/>
+            <TextBlock Text="{Binding Immune}" Grid.Row="3" Grid.Column="1" TextAlignment="Right"/>
+
+            <TextBlock Text="Exited:" Grid.Row="4"/>
+            <TextBlock Text="{Binding Exited}" Grid.Row="4" Grid.Column="1" TextAlignment="Right"/>
+        </Grid>
+
+        <Button Content="OK" Margin="0,20,0,0" Width="80" HorizontalAlignment="Center" Click="Close_Click"/>
+    </StackPanel>
+</Window>

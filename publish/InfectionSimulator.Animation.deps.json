@@ -1,0 +1,106 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "InfectionSimulator.Animation/1.0.0": {
+        "dependencies": {
+          "InfectionSimulator.Models": "1.0.0",
+          "InfectionSimulator.Services": "1.0.0",
+          "InfectionSimulator.Simulation": "1.0.0"
+        },
+        "runtime": {
+          "InfectionSimulator.Animation.dll": {}
+        }
+      },
+      "InfectionSimulator.Implementation/1.0.0": {
+        "dependencies": {
+          "InfectionSimulator.Interfaces": "1.0.0"
+        },
+        "runtime": {
+          "InfectionSimulator.Implementation.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "InfectionSimulator.Interfaces/1.0.0": {
+        "runtime": {
+          "InfectionSimulator.Interfaces.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "InfectionSimulator.Models/1.0.0": {
+        "dependencies": {
+          "InfectionSimulator.Implementation": "1.0.0"
+        },
+        "runtime": {
+          "InfectionSimulator.Models.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "InfectionSimulator.Services/1.0.0": {
+        "dependencies": {
+          "InfectionSimulator.Models": "1.0.0"
+        },
+        "runtime": {
+          "InfectionSimulator.Services.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "InfectionSimulator.Simulation/1.0.0": {
+        "dependencies": {
+          "InfectionSimulator.Interfaces": "1.0.0",
+          "InfectionSimulator.Models": "1.0.0"
+        },
+        "runtime": {
+          "InfectionSimulator.Simulation.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "InfectionSimulator.Animation/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "InfectionSimulator.Implementation/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "InfectionSimulator.Interfaces/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "InfectionSimulator.Models/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "InfectionSimulator.Services/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "InfectionSimulator.Simulation/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

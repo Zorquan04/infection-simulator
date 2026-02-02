@@ -1,13 +1,36 @@
 ﻿<Window x:Class="InfectionSimulator.Animation.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Infection Simulator" Height="550" Width="500">
-    <DockPanel>
-        <!-- Pasek statystyk -->
-        <TextBlock x:Name="StatsTextBlock" DockPanel.Dock="Top" 
-                   FontSize="14" Foreground="White" Background="Black"
-                   Padding="5"/>
-        <!-- Canvas dla animacji -->
-    <Canvas x:Name="SimulationCanvas" Background="Black"/>
-    </DockPanel>
+        Title="Infection Simulator"
+        Height="700" Width="600"
+        ResizeMode="NoResize" 
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <!-- rows:
+             0 - statistics bar (auto)
+             1 - simulation canvas (fills remaining space)
+             2 - control buttons bar (auto)
+        -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="#222" Padding="5">
+            <TextBlock x:Name="StatsTextBlock" FontSize="14" Foreground="White" TextAlignment="Center"/>
+        </Border>
+
+        <Canvas x:Name="SimulationCanvas" Grid.Row="1" Background="Black"/>
+
+        <Border Grid.Row="2" Background="#222" Padding="8">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,4,0,4">
+                <Button x:Name="StartStopButton" Content="Stop" FontWeight="Bold" Width="90" Margin="6,0" Padding="6" Click="StartStopButton_Click"/>
+
+                <Button x:Name="SpeedButton" Content="Speed up x2" FontWeight="Bold" Width="120" Margin="6,0" Padding="6" Click="SpeedButton_Click"/>
+
+                <Button x:Name="RestartButton" Content="Restart" FontWeight="Bold" Width="90" Margin="6,0" Padding="6" Click="RestartButton_Click"/>
+            </StackPanel>
+        </Border>
+    </Grid>
 </Window>

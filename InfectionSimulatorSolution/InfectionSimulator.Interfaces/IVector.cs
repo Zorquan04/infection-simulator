@@ -2,7 +2,7 @@
 
 public interface IVector
 {
-    double Abs();                      // długość wektora
-    double Cdot(IVector param);        // iloczyn skalarny
-    double[] GetComponents();          // zwraca współrzędne jako tablicę
+    double Abs();                      // vector length
+    double Cdot(IVector param);        // dot product
+    double[] GetComponents();          // returns coordinates as an array
 }
