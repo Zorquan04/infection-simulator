@@ -36,7 +36,7 @@ Frontend written in **WPF**, backend in **C#**, with real-time motion visualizat
 
 ### **Snapshot & Result Window**
 - Each agent can create its own `PersonMemento`.
-- After the simulation ends, a JSON file is saved ([see](InfectionSimulatorSolution/InfectionSimulator.Animation/bin/Debug/net9.0-windows)):
+- After the simulation ends, a JSON file is saved:
 
 ```
 snapshot.json
